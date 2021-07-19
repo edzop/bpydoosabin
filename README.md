@@ -11,3 +11,6 @@ Example subdivisions:
 
 ![ds1](images/ds2.jpg)
 
+
+## Installation
+Clone this repository into your `blender/scripts/addons` directory then enable via blender addon preferences. Select an object and press F3 to search for operators. Type or choose doosabin
