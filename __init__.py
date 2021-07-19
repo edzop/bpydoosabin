@@ -11,7 +11,7 @@
 # | Doo-Sabin Subdivision                                   |
 # +---------------------------------------------------------+
 
-# Modified for blender 2.93 on July 2021
+# Modified for blender 2.93 on July 2021 by edzop
 
 bl_info = {
 	"name": "DooSabin",
