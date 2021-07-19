@@ -256,7 +256,7 @@ def doo_sabin3(verts, faces,depth):
 			
 			
 
-			raw_faces.append(new_corner_face)
+			#raw_faces.append(new_corner_face)
 
 			#sorted=map(esort,new_corner_face)
 			#raw_faces.append(new_corner_face)
