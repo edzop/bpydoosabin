@@ -5,11 +5,7 @@ The [Original Version](https://scorpius.github.io/blender-plugins.htm) was writt
 
 This version modifies the previous version to work on blender 2.93
 
-Example subdivisions:
-
-![ds1](images/ds1.jpg)
-
-![ds1](images/ds2.jpg)
+## Examples
 
 ![subdivisions](images/2021_07_doosabin_05.png)
 Top left - Original Mesh
@@ -22,6 +18,31 @@ Bottom - doo sabin (1 and 2 levels) with vertfaces disabled (the holes)
 Testing on two different icospheres (top 3 subdivisions, bottom 2 subdivisions).
 
 Left no doo sabin, center doo sabin once, right doo sabin twice.
+
+![ds1](images/ds1.jpg)
+Cube with one iteration of doosabin
+
+![ds1](images/ds2.jpg)
+Cylinder with one iteration of doo sabin
+
+
+## Options
+
+![f_all.png](images/f_all.png)
+Generate All Faces
+
+![f_all.png](images/f_e.png)
+Generate Edge Faces Only
+
+![f_all.png](images/f_f.png)
+Generate Face Faces Only
+
+![f_all.png](images/f_v.png)
+Generate Vert Faces Only
+
+![f_all.png](images/f_ve.png)
+Generate Vert and Edge Faces Only
+
 
 
 ## Installation
