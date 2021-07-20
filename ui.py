@@ -17,6 +17,14 @@ class OperatorDooSabin(bpy.types.Operator):
 	bl_options = {'REGISTER', 'UNDO'}  # Enable undo for the operator.
 
 
+	averaging_weight: FloatProperty(
+		name="Averaging Weight",
+		description="Averaging weight (EXPERIMENTAL)",
+		default=0,
+		min=-2,
+		max=2
+	)
+
 	iterations: IntProperty(
 		name="Iterations",
 		description="Iterations for doo sabin operator",
@@ -56,6 +64,7 @@ class OperatorDooSabin(bpy.types.Operator):
 		layout.prop(self, "gen_face_faces")
 		layout.prop(self, "gen_vert_faces")
 		layout.prop(self, "gen_edge_faces")
+		layout.prop(self,"averaging_weight")
 		layout.prop(self, "iterations")
 		layout.prop(self, "hide_source_object")
 
@@ -73,6 +82,7 @@ class OperatorDooSabin(bpy.types.Operator):
 		my_doosabin.generate_vert_faces=self.gen_vert_faces
 		my_doosabin.generate_face_faces=self.gen_face_faces
 		my_doosabin.hide_source_object=self.hide_source_object
+		my_doosabin.averaging_weight=self.averaging_weight
 
 		my_doosabin.perform_doo_sabin(selected_object,self.iterations)
 
