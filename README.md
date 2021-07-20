@@ -34,7 +34,7 @@ Clone this repository into your `blender/scripts/addons` directory then enable v
 - ~~Ability to toggle edge_faces and vert_faces on or off~~
 - Ability to assign material slot index to individual face types.
 - Update readme to describe nomenclature for generated face types
-- Update bmesh updater to reuse vertex (currently vertices are created for each face and not reused. Currently need to remove doubles after generation until this is fixed)
+- ~~Update bmesh updater to reuse vertex (currently vertices are created for each face and not reused. Currently need to remove doubles after generation until this is fixed)~~
 - Add parameter to adjust weight of vertex to normal averaging to finetune generated geometry. 
 - Add automated unit test script to generate several predefined shapes and execute modifier on each one to analyze results. automatically render unit tests for communicating change updates. 
 
@@ -47,3 +47,5 @@ Clone this repository into your `blender/scripts/addons` directory then enable v
 - Add toggle for generating edge faces 
 - Add iterations parameter
 - Add toggle for hiding original object - if original is not hidden the new generated object is placed to the right of original for comparison. 
+- Add averaging weight parameter
+- Reuse bmesh verts to prevent doubles and requrement for post cleanup

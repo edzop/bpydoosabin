@@ -40,23 +40,19 @@ class doosabin:
     generate_edge_faces=True
     generate_face_faces=True
 
+    averaging_weight=1.0
+
     hide_source_object=True
 
-
     def doo_sabin3(self,verts, faces,depth):
+
         numfaces = len(faces)
-        face_faces = []
         etab = {}
-
         raw_faces=[]
-
-        face_faces=[]
-        
-        vert_faces=[]
-
         vert_mapping={}
 
         for i in range(numfaces):
+            face_faces=[]
             print("===== Face: %d ========"%i)
             T = meshtools.centroid(verts, faces[i])
             numverts = len(faces[i])
@@ -70,16 +66,21 @@ class doosabin:
             edge_centers=[]
 
             for i,(v0,v1) in enumerate(edge_zip):
-                edge_center=vector.vavg([v0,v1])
+
+                if self.averaging_weight!=0:
+                    vAverage=[ v0[0]*self.averaging_weight,v0[1]*self.averaging_weight,v0[2]*self.averaging_weight ]
+                    edge_center=vector.vavg([v0,v1,vAverage])
+                else:
+                    edge_center=vector.vavg([v0,v1])
                 edges.append([v0,v1])
                 edge_centers.append(edge_center)
-                print("Edge %d: %s %s - Center: %s"%(i,str(v0),str(v1),str(edge_center)))
+                
+                if self.debug_output:
+                    print("Edge %d: %s %s - Center: %s"%(i,str(v0),str(v1),str(edge_center)))
                 
             print("======")
 
             centeroids = [T]*numverts
-            #v = faceverts
-            #w = edge_centers
             rs_edge_centers = right_shift(edge_centers)
 
             fverts = zip(centeroids,faceverts,edge_centers,rs_edge_centers)
@@ -99,11 +100,8 @@ class doosabin:
                 else:
                     vert_mapping[vert_key]=[ fv_average ]
 
-            print("newverts: %s"%(str(new_fverts)))
-
-            #fverts = map(vavg, fverts)
-
-            #if self.generate_face_faces:
+            if self.debug_output:
+                print("newverts: %s"%(str(new_fverts)))
 
             face_faces.append(new_fverts)
 
@@ -136,52 +134,39 @@ class doosabin:
 
             #fverts = zip(fverts, left_shift(fverts))
 
-            
+        if self.generate_edge_faces:
 
-            if self.generate_edge_faces:
+            edge_faces=[]
 
-                edge_faces=[]
+            for i,e in enumerate(etab):
+                
+                val=etab.get(e)
+                print("etab %d: %s -> %s"%(i,str(e),str(val)))
+                
+                if len(val)==2:
 
-                print("ETAB")
-                for i,e in enumerate(etab):
-                    
-                    val=etab.get(e)
-                    print("etab %d: %s -> %s"%(i,str(e),str(val)))
-                    
-                    if len(val)==2:
-                        #print(val[0])
+                    this_face=[ 
+                        val[0][0], 
+                        val[0][1], 
+                        val[1][0],
+                        val[1][1]
+                    ]
 
-                        this_face=[ 
-                            val[0][0], 
-                            val[0][1], 
-                            val[1][0],
-                            val[1][1]
-                        ]
-
-                        print("TF1 %d: %s"%(i,str(this_face)))
-                        edge_faces.append(this_face)
+                    print("TF1 %d: %s"%(i,str(this_face)))
+                    edge_faces.append(this_face)
 
 
-                        this_face=[ 
-                            val[0][0], 
-                            val[0][1], 
-                            val[1][0],
-                            val[1][1]
-                        ]
+                    # This is helpful for drawing lines to show how vertices are being constructed
+                    #new_edge_set.append([val[0][0],val[0][1]])
+                    #new_edge_set.append([val[1][0],val[1][1]])
 
-                        #print("TF2 %d: %s"%(i,str(this_face)))
-                        #edge_faces2.append(this_face)
+                    #new_edge_set.append([val[1][0],val[0][1]])
+                    #new_edge_set.append([val[0][0],val[1][1]])
 
-                        #new_edge_set.append([val[0][0],val[0][1]])
-                        #new_edge_set.append([val[1][0],val[1][1]])
+            print("appending: %s"%edge_faces)
 
-                        #new_edge_set.append([val[1][0],val[0][1]])
-                        #new_edge_set.append([val[0][0],val[1][1]])
-
-                #edge_faces3=list(map(esort,edge_faces2))
-
-                raw_faces.extend(edge_faces)
-                    
+            raw_faces.extend(edge_faces)
+                
                     
         #edge_faces = etab.values()
         #vert_faces = make_vfaces(etab)
@@ -199,19 +184,6 @@ class doosabin:
         #edge_faces = [rawface for rawface in edge_faces if len(rawface) > 2]
         #vert_faces = [rawface for rawface in vert_faces if len(rawface) > 2]
         
-        #raw_faces = face_faces + vert_faces + edge_faces
-        
-        #if self.generate_face_faces:
-        #    raw_faces.extend(face_faces)
-
-        #f self.generate_edge_faces:
-        #    raw_faces.extend(edge_faces)
-
-        #print("RAW")
-        #print(raw_faces)
-
-
-
         if self.generate_vert_faces:
 
             # ======= Add Corner Faces
@@ -247,37 +219,53 @@ class doosabin:
         #print("Vert Mapping: ============")
         #print(vert_mapping)
 
+        verts, faces = meshtools.raw_to_indexed(raw_faces)
+
         if depth==1: 
             #print("Raw Faces: %s"%str(raw_faces))
-            return (raw_faces)
-
-        verts, faces = meshtools.raw_to_indexed(raw_faces)
+            return verts, faces
 
         return 	self.doo_sabin3(verts, faces, depth-1)
 
-    def mesh_from_raw_faces(self,raw_faces,new_object_name):
+    def build_new_mesh(self,verts,faces,new_object_name):
 
         # Create New Mesh
         bm_new = bmesh.new()
 
+        if self.debug_output:
+            print("verts:")
+            print(verts)
+
+            print("faces:")
+            print(faces)
+
         # ============== recreate =============
-        print("\n----- raw faces:")
-        print(raw_faces)
+        #print("\n----- raw faces:")
+        #print(raw_faces)
 
-        for i,face in enumerate(raw_faces):
+        newverts=[]
+
+        for i,vert in enumerate(verts):
             if self.debug_output:
-                print("Face %d: %s --------------"%(i,face))
+                print("Vert %d: %s"%(i,vert))
 
-            newverts=[]
+            new_vert=bm_new.verts.new(vert)
+            newverts.append(new_vert)
+        
+        for i,f in enumerate(faces):
 
-            for i2,v in enumerate(face):
-                if self.debug_output:
-                    print("vert %d: %s"%(i2,v))
+            faceverts=[]
 
-                new_vert=bm_new.verts.new(v)
-                newverts.append(new_vert)
+            if self.debug_output:
+                print("Face %d: %s"%(i,f))
 
-            bm_new.faces.new(newverts)
+            for v in f:
+                faceverts.append(newverts[v])
+
+            print("Face Verts")
+            print(faceverts)
+                
+            bm_new.faces.new(faceverts)
 
         #for edgeset in new_edge_set:
         #	v1=bm_new.verts.new(edgeset[0])
@@ -330,9 +318,9 @@ class doosabin:
             print("edges:")
             print(edges)
         
-        raw_faces=self.doo_sabin3(verts,faces,iterations)
+        verts,faces=self.doo_sabin3(verts,faces,iterations)
 
-        mesh_obj=self.mesh_from_raw_faces(raw_faces,new_object_name)
+        mesh_obj=self.build_new_mesh(verts,faces,new_object_name)
 
         
         mesh_obj.location.y=selected_object.location.y
