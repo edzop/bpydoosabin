@@ -19,6 +19,11 @@ import bmesh
 from . import meshtools
 from . import vector
 
+import math
+import mathutils
+from mathutils import Vector
+
+
 # ======================================
 # === Doo Sabin Subivision Functions ===
 # ======================================
@@ -33,9 +38,48 @@ def right_shift(seq):
 	return val
 
 
+def sort_radial_sweep(vs):
+    """
+    Given a list of vertex positions (vs) and indices
+    for verts making up a circular-ish planar polygon,
+    returns the vertex indices in order around that poly.
+    """
+
+    print("Sort Radial Sweep: %s"%vs)
+
+    assert len(vs) >= 3
+    
+    # Centroid of verts
+    cent = Vector()
+    for v in vs:
+        cent += (1/len(vs)) * v
+
+    # Normalized vector from centroid to first vertex
+    # ASSUMES: vs[0] is not located at the centroid
+    r0 = (vs[0] - cent).normalized()
+
+    # Normal to plane of poly
+    # ASSUMES: cent, vs[0], and vs[1] are not colinear
+    nor = (vs[1] - cent).cross(r0).normalized()
+
+    # Pairs of (vertex index, angle to centroid)
+
+    vpairs = []
+    for vpos in vs:
+        r1 = (vpos - cent).normalized()
+        dot=r1.dot(r0)
+        angle = math.acos(max(min(dot, 1), -1))
+        angle *= 1 if nor.dot(r1.cross(r0)) >= 0 else -1    
+        vpairs.append((vpos, angle))
+    
+    # Sort by angle and return indices
+    vpairs.sort(key=lambda v: v[1])
+    return [vpos for vpos, angle in vpairs]
+
 class doosabin:
 
-    debug_output=True
+    debug_output=False
+
     generate_vert_faces=True
     generate_edge_faces=True
     generate_face_faces=True
@@ -198,7 +242,20 @@ class doosabin:
                 #new_vert_face.reverse()
 
                 if len(new_vert_face)>2:
-                    
+
+                    # Convert to Vectors (sort_radial_sweep wants Vector array)
+                    vector_list=[]
+                    for v in vert_mappings:
+                        vector_list.append(Vector((v[0],v[1],v[2])))
+
+                    sorted_vectors=sort_radial_sweep(vector_list)
+
+                    # Convert back to tuple
+
+                    new_vert_face=[]
+                    for v in sorted_vectors:
+                        new_vert_face.append((v.x,v.y,v.z))
+        
                     #if len(new_vert_face)==4:
                     #	new_vert_face=[
                     #		vert_mappings[3],
@@ -207,8 +264,6 @@ class doosabin:
                     #		vert_mappings[0]
                     #		]
                     
-                    
-
                     raw_faces.append(new_vert_face)
 
                     #sorted=map(esort,new_vert_face)
