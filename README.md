@@ -19,11 +19,13 @@ Testing on two different icospheres (top 3 subdivisions, bottom 2 subdivisions).
 
 Left no doo sabin, center doo sabin once, right doo sabin twice.
 
-![ds1](images/ds1.jpg)
-Cube with one iteration of doosabin
 
-![ds1](images/ds2.jpg)
-Cylinder with one iteration of doo sabin
+
+![example1](images/2021_07_doosabin_16.cycles.dn.0004.jpg)
+
+![example1](images/2021_07_doosabin_17.cycles.dn.0003.jpg)
+
+![example1](images/2021_07_doosabin_17.cycles.dn.0005.jpg)
 
 
 ## Options
@@ -53,11 +55,11 @@ Clone this repository into your `blender/scripts/addons` directory then enable v
 
 - ~~Add GUI for changing parameters on the fly and adjusting options~~
 - ~~Ability to toggle edge_faces and vert_faces on or off~~
-- Ability to assign material slot index to individual face types.
+
 - ~~Update readme to describe nomenclature for generated face types~~
 - ~~Update bmesh updater to reuse vertex (currently vertices are created for each face and not reused. Currently need to remove doubles after generation until this is fixed)~~
 - ~~Add parameter to adjust weight of vertex to normal averaging to finetune generated geometry.~~
-- Add automated unit test script to generate several predefined shapes and execute modifier on each one to analyze results. automatically render unit tests for communicating change updates. 
+
 
 ### Update July 19th 2021
 - Refactor to class structure
